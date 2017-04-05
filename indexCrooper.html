@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+
+    <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.0/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+    <link rel="stylesheet" type="text/css" href="cropper/cropper.min.css">
+    <script src="cropper/cropper.min.js"></script>
+    <script src="cropper/ProfilePictureCrop.js"></script>
+    <script>
+        $(document).ready(function () {
+            ProfilePictureCrop.init();
+
+            $('#exampleModal').modal('show');
+        });
+    </script>
+</head>
+<body>
+<div class="container">
+    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal"
+            style="margin: 300px auto; display: inline-block;">
+        Launch demo modal
+    </button>
+    <div  class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document" style="width: 100%">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form id="editProfilePictureForm" role="form" action="#" class="form-horizontal"
+                          enctype="multipart/form-data">
+                        <div class="ibox-content">
+                            <p class="m-b-20">
+
+                            </p>
+
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="image-crop m-b-20">
+                                        <img id="image" name='profile-picture' style="max-width: 1000px"
+                                             src="cropper/picture.jpg"
+                                             alt="user-profile-image">
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6 text-center">
+                                    <div class="img-preview img-preview-sm"></div>
+
+                                    <div class="m-t-30">
+                                        <label title="Upload image file" for="inputImage"
+                                               class="btn btn-default-blue font-weight-700">
+                                            <input type="file" accept="image/*" name="file" id="inputImage"
+                                                   class="hide">
+                                            Upload*
+                                        </label>
+
+                                        <label title="Reset crop" id="resetCrop"
+                                               class="btn btn-default-blue font-weight-700">Reset</label>
+
+                                        <label title="Remove image" id="removeImage"
+                                               class="btn btn-default-blue font-weight-700">Remove</label>
+                                    </div>
+                                    <div class="btn-group m-t-20">
+                                        <button class="btn-small btn-default-white font-weight-600" id="zoomIn"
+                                                type="button">Zoom in
+                                        </button>
+                                        <button class="btn-small btn-default-white font-weight-600" id="zoomOut"
+                                                type="button">Zoom out
+                                        </button>
+                                    </div>
+                                    <div>
+                                        <button class="btn-small btn-default-white font-weight-600 m-t-10"
+                                                id="rotateLeft"
+                                                type="button">Rotate left
+                                        </button>
+                                        <button class="btn-small btn-default-white font-weight-600 m-t-10"
+                                                id="rotateRight"
+                                                type="button">Rotate Right
+                                        </button>
+                                    </div>
+
+                                    <div class="img-upload-limit">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <input id="idUserProfilePicture" name="idUserProfilePicture" type="hidden"
+                               value="{{$idUserProfilePicture}}"/>
+                    </form>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" id="saveProfilePicture" class="btn btn-primary">Save changes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

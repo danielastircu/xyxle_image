@@ -2,47 +2,108 @@
 require __DIR__ . '/vendor/autoload.php';
 require __DIR__ . '/Database.php';
 require __DIR__ . '/GoogleConnection.php';
+require __DIR__ . '/ExtractData.php';
 
 
-$db = new Database('localhost', 'root', '', 'xyxle_image');
-for ($i = 1; $i <= 12; $i++) {
-    $file_1 = 'product_' . '2' . '_1.jpg';
-    $file_2 = 'product_' . '2' . '_2.jpg';
+$db        = new Database('localhost', 'root', '', 'xyxle_image');
+$extractor = new ExtractData();
 
-
-    $file_1_path = 'product_' . '2' . '_2.txt';
-    $data        = file_get_contents(__DIR__ . '/images/v1/files/' . $file_1_path);
-    $obj_1       = unserialize($data);
-
-
-    $data  = file_get_contents(__DIR__ . '/images/v1/document/' . $file_1_path);
-    $obj_2 = unserialize($data);
-
-//    var_dump($obj_1->info()['textAnnotations']);die;
-    var_dump($obj_2->info()['fullTextAnnotation']['pages'][0]['blocks']);die;
-    var_dump($obj_2->info()['fullTextAnnotation']['pages'][0]['blocks'][5]['paragraphs']);
-    var_dump($obj_2->info()['fullTextAnnotation']['pages'][0]['blocks'][6]['paragraphs']);die;
-//    var_dump($obj_2);
-    foreach ($obj_2->info()['fullTextAnnotation']['pages'][0]['blocks'] as $key => $row) {
-
-        foreach ($row['paragraphs'] as $k => $r) {
-            var_dump($k);
-            var_dump($r);
+function kj($obj_data)
+{
+    $data = [];
+    preg_match_all('/\d+[\s]?k([\s]|j|v)/', strtolower($obj_data['text']), $matches);
+    if ($matches) {
+        foreach ($matches[0] as $key => $match) {
+            preg_match_all('/\d+/', $match, $value);
+            if ($key > 0) {
+//                this is for products that have for more than 100g information
+//                and it is consider that the first value is for 100g
+                continue;
+            }
+            $data['100'] = $value[0][0];
         }
-
-        die;
     }
-//
-//    foreach ($obj_2->info() as $key => $row) {
-//        var_dump($key);
-//        var_dump($row);
-//    }
+
+    return $data;
+}
+
+function kcal($obj_data)
+{
+    $data = [];
+    preg_match_all('/\d+[\s]?kcal/', strtolower($obj_data['text']), $matches);
+    if ($matches) {
+        foreach ($matches[0] as $key => $match) {
+            preg_match_all('/\d+/', $match, $value);
+            if ($key > 0) {
+//                this is for products that have for more than 100g information
+//                and it is consider that the first value is for 100g
+                continue;
+            }
+            $data['100'] = $value[0][0];
+        }
+    }
+
+    return $data;
+}
+
+$products = [];
+for ($i = 1; $i <= 12; $i++) {
+
+    var_dump("---------------------------------");
+    var_dump($i);
+
+    $file_1_path = 'product_' . $i . '_2.txt';
+    $data        = file_get_contents(__DIR__ . '/images/v1/document/' . $file_1_path);
+    $obj_2       = unserialize($data);
 
 
-//    var_dump($obj_1);
-    die;
+    $obj_data['text']   = $extractor->getFullText($obj_2);
+    $obj_data['words']  = $extractor->getWords($obj_2);
+    $obj_data['blocks'] = $extractor->getBlocks($obj_2);
 
+
+//    $products[$i]['kj']   = kj($obj_data);
+//    $products[$i]['kcal'] = kcal($obj_data);
+
+
+    if ($start = strpos(strtolower($obj_data['text']), 'zutaten')) {
+
+        $end = strpos(strtolower($obj_data['text']), '.', $start);
+//            case 0.5 (number)
+        while (true) {
+            if (!(is_numeric($obj_data['text'][$end - 1]) and is_numeric($obj_data['text'][$end + 1]))) {
+                break;
+            }
+            $end = strpos(strtolower($obj_data['text']), '.', $end + 1);
+        }
+        $length          = $end - $start;
+        $products[$i][0] = substr($obj_data['text'], $start, $length);
+    }
+
+
+    foreach ($obj_data['blocks'] as $keyBlock => $block) {
+        foreach ($block as $keyParagraph => $paragraph) {
+            if (strpos(strtolower($paragraph), 'zutaten')) {
+                $products[$i][1] = $paragraph;
+
+            }
+//            $products[$i]['ingredients']['german'] =
+//            var_dump($paragraph);
+        }
+    }
+
+//    die;
 
 }
+//foreach ($products as $r)
+//echo($products[10][0]);
+//die;
+
+var_dump($products);
+die;
+die;
+
+
+
 
 
