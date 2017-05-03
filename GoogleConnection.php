@@ -27,7 +27,11 @@ class GoogleConnection
 
         $image = $vision->image($familyPhotoResource, [
             'DOCUMENT_TEXT_DETECTION'
-        ]);
+        ], ['imageContext' => [
+            'languageHints' => [
+                'de', 'fr', 'it'
+            ]
+        ]]);
 
 
         $result = $vision->annotate($image);

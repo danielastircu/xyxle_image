@@ -4,8 +4,88 @@ require __DIR__ . '/Database.php';
 require __DIR__ . '/GoogleConnection.php';
 require __DIR__ . '/ExtractData.php';
 
+function levenshtein_php($str1, $str2)
+{
+    $length1 = mb_strlen($str1, 'UTF-8');
+    $length2 = mb_strlen($str2, 'UTF-8');
+    if ($length1 < $length2) return levenshtein_php($str2, $str1);
+    if ($length1 == 0) return $length2;
+    if ($str1 === $str2) return 0;
+    $prevRow    = range(0, $length2);
+    $currentRow = [];
+    for ($i = 0; $i < $length1; $i++) {
+        $currentRow    = [];
+        $currentRow[0] = $i + 1;
+        $c1            = mb_substr($str1, $i, 1, 'UTF-8');
+        for ($j = 0; $j < $length2; $j++) {
+            $c2            = mb_substr($str2, $j, 1, 'UTF-8');
+            $insertions    = $prevRow[$j + 1] + 1;
+            $deletions     = $currentRow[$j] + 1;
+            $substitutions = $prevRow[$j] + (($c1 != $c2) ? 1 : 0);
+            $currentRow[]  = min($insertions, $deletions, $substitutions);
+        }
+        $prevRow = $currentRow;
+    }
 
-$db        = new Database('localhost', 'root', '', 'xyxle_image');
+    return $prevRow[$length2];
+}
+
+$google = New GoogleConnection();
+$result = $google->getImageData(__DIR__ . "/cropper/crop.jpg");
+$myfile = fopen(__DIR__ . '/object.txt', 'w') or die("Unable to open file!");
+var_dump(unserialize($result));
+fwrite($myfile, $result);
+fclose($myfile);
+
+
+die;
+
+similar_text('butter', 'buWer',$percent);
+var_dump($percent);
+similar_text('butter', 'peanutbutter',$percent);
+var_dump($percent);
+similar_text('butter', 'butt',$percent);
+var_dump($percent);
+
+similar_text('kj', 'kv',$percent);
+var_dump($percent);
+similar_text('kj', 'ki',$percent);
+var_dump($percent);
+similar_text('kj', 'kv',$percent);
+var_dump($percent);
+similar_text('kj', 'kjla',$percent);
+var_dump($percent);
+//die;
+
+
+var_dump("-----------------------------------------------------------------------------");
+
+
+var_dump(levenshtein('notre', 'votre'));
+ var_dump(levenshtein('notre', 'nôtre'));
+
+similar_text('notre', 'nôtre',$percent);
+var_dump($percent);
+similar_text('notre', 'votre',$percent);
+var_dump($percent);
+
+
+var_dump(levenshtein('kj', 'kv'));
+var_dump(levenshtein('kj', 'ki'));
+var_dump(levenshtein('kj', 'kv'));
+var_dump(levenshtein('kj', 'kjla'));
+
+var_dump("-----------------------------------------------------------------------------");
+
+
+var_dump(levenshtein_php('kj', 'kv'));
+var_dump(levenshtein_php('kj', 'ki'));
+var_dump(levenshtein_php('kj', 'kv'));
+var_dump(levenshtein_php('kj', 'kjla'));
+var_dump(levenshtein_php('notre', 'nôtre'));
+var_dump(levenshtein_php('notre', 'votre'));
+die;
+
 $extractor = new ExtractData();
 
 function kj($obj_data)
